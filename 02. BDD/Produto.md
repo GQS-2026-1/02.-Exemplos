@@ -54,7 +54,7 @@ cadastro-produtos-cucumber
 
 Crie um projeto Maven no NetBeans e defina:
 
-- **GroupId**: `br.com.exemplo`
+- **GroupId**: `exemplo`
 - **ArtifactId**: `cadastro-produtos-cucumber`
 
 ---
@@ -71,7 +71,7 @@ Crie o arquivo `pom.xml` com o conteúdo abaixo:
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>br.com.exemplo</groupId>
+    <groupId>exemplo</groupId>
     <artifactId>cadastro-produtos-cucumber</artifactId>
     <version>1.0-SNAPSHOT</version>
 
@@ -132,10 +132,10 @@ Crie o arquivo `pom.xml` com o conteúdo abaixo:
 
 ## 🧱 3. Criar a classe `Produto`
 
-Arquivo: `src/main/java/br/com/exemplo/model/Produto.java`
+Arquivo: `src/main/java/exemplo/model/Produto.java`
 
 ```java
-package br.com.exemplo.model;
+package exemplo.model;
 
 public class Produto {
     private String nome;
@@ -166,18 +166,17 @@ public class Produto {
 
 ## 🧾 4. Criar a classe de serviço
 
-Arquivo: `src/main/java/br/com/exemplo/service/CadastroProdutoService.java`
+Arquivo: `src/main/java/exemplo/service/CadastroProdutoService.java`
 
 ```java
-package br.com.exemplo.service;
+package exemplo.service;
 
-import br.com.exemplo.model.Produto;
+import exemplo.model.Produto;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CadastroProdutoService {
-
-    private final List<Produto> produtosArmazenados = new ArrayList<>();
+private final List<Produto> produtosArmazenados = new ArrayList<>();
+    private String observacao;
 
     public void cadastrarProdutos(List<Produto> produtos) {
         produtosArmazenados.addAll(produtos);
@@ -185,6 +184,14 @@ public class CadastroProdutoService {
 
     public List<Produto> getProdutosArmazenados() {
         return produtosArmazenados;
+    }
+
+    public void salvarObservacao(String observacao) {
+        this.observacao = observacao;
+    }
+
+    public String getObservacao() {
+        return observacao;
     }
 }
 ```
@@ -198,29 +205,42 @@ Arquivo: `src/test/resources/features/cadastro_produtos.feature`
 ```gherkin
 #language: pt
 
+@cadastro
 Funcionalidade: Cadastro de produtos
 
-  Cenário: Cadastrar vários produtos
+  # Cenário para cadastrar vários produtos de uma vez
+  @massa_de_dados
+  Cenário: Cadastrar produtos com tabela
     Dado que os seguintes produtos foram informados:
-      | nome     | preco | quantidade |
-      | Caderno  | 20.00 | 10         |
-      | Caneta   | 5.00  | 30         |
-      | Mochila  | 80.00 | 5          |
+      | nome    | preco | quantidade |
+      | Livro   | 50.00 | 3          |
+      | Caderno | 25.00 | 10         |
     Quando o cadastro for realizado
-    Então o sistema deve armazenar todos os produtos corretamente
+    Então o sistema deve armazenar os produtos corretamente
+
+  @mensagem
+  Cenário: Registrar observação do produto
+    Dado que o usuário informou a seguinte descrição:
+      """
+      Produto destinado ao estoque escolar.
+      Deve ser armazenado em local seco.
+      """
+    Quando salvar a observação
+    Então o sistema deve registrar a descrição com sucesso
 ```
 
 ---
 
 ## 🔗 6. Criar os Steps Definitions
 
-Arquivo: `src/test/java/br/com/exemplo/steps/CadastroProdutoSteps.java`
+Arquivo: `src/test/java/exemplo/steps/CadastroProdutoSteps.java`
 
 ```java
-package br.com.exemplo.steps;
+package exemplo.steps;
 
-import br.com.exemplo.model.Produto;
-import br.com.exemplo.service.CadastroProdutoService;
+import exemplo.model.Produto;
+import exemplo.service.CadastroProdutoService;
+
 import io.cucumber.datatable.DataTable;
 import io.cucumber.java.pt.Dado;
 import io.cucumber.java.pt.Quando;
@@ -231,11 +251,13 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class CadastroProdutoSteps {
 
     private List<Produto> produtosInformados;
     private CadastroProdutoService service;
+    private String descricaoInformada;
 
     public CadastroProdutoSteps() {
         this.produtosInformados = new ArrayList<>();
@@ -255,28 +277,40 @@ public class CadastroProdutoSteps {
         }
     }
 
+    @Dado("que o usuário informou a seguinte descrição:")
+    public void que_o_usuario_informou_a_seguinte_descricao(String descricao) {
+        this.descricaoInformada = descricao;
+    }
+
     @Quando("o cadastro for realizado")
     public void o_cadastro_for_realizado() {
         service.cadastrarProdutos(produtosInformados);
     }
 
-    @Então("o sistema deve armazenar todos os produtos corretamente")
-    public void o_sistema_deve_armazenar_todos_os_produtos_corretamente() {
+    @Quando("salvar a observação")
+    public void salvar_a_observacao() {
+        service.salvarObservacao(descricaoInformada);
+    }
+
+    @Entao("o sistema deve armazenar os produtos corretamente")
+    public void o_sistema_deve_armazenar_os_produtos_corretamente() {
         List<Produto> armazenados = service.getProdutosArmazenados();
 
-        assertEquals(3, armazenados.size());
+        assertEquals(2, armazenados.size());
 
-        assertEquals("Caderno", armazenados.get(0).getNome());
-        assertEquals(20.00, armazenados.get(0).getPreco());
-        assertEquals(10, armazenados.get(0).getQuantidade());
+        assertEquals("Livro", armazenados.get(0).getNome());
+        assertEquals(50.00, armazenados.get(0).getPreco());
+        assertEquals(3, armazenados.get(0).getQuantidade());
 
-        assertEquals("Caneta", armazenados.get(1).getNome());
-        assertEquals(5.00, armazenados.get(1).getPreco());
-        assertEquals(30, armazenados.get(1).getQuantidade());
+        assertEquals("Caderno", armazenados.get(1).getNome());
+        assertEquals(25.00, armazenados.get(1).getPreco());
+        assertEquals(10, armazenados.get(1).getQuantidade());
+    }
 
-        assertEquals("Mochila", armazenados.get(2).getNome());
-        assertEquals(80.00, armazenados.get(2).getPreco());
-        assertEquals(5, armazenados.get(2).getQuantidade());
+    @Entao("o sistema deve registrar a descrição com sucesso")
+    public void o_sistema_deve_registrar_a_descricao_com_sucesso() {
+        assertNotNull(service.getObservacao());
+        assertEquals(descricaoInformada, service.getObservacao());
     }
 }
 ```
@@ -291,7 +325,7 @@ public class CadastroProdutoSteps {
 
 ## ▶️ 7. Criar o Runner dos testes
 
-Arquivo: `src/test/java/br/com/exemplo/runner/RunnerTest.java`
+Arquivo: `src/test/java/exemplo/runner/RunnerTest.java`
 
 ```java
 package br.com.exemplo.runner;
@@ -307,7 +341,7 @@ import static io.cucumber.junit.platform.engine.Constants.PLUGIN_PROPERTY_NAME;
 @Suite
 @IncludeEngines("cucumber")
 @SelectClasspathResource("features")
-@ConfigurationParameter(key = GLUE_PROPERTY_NAME, value = "br.com.exemplo.steps")
+@ConfigurationParameter(key = GLUE_PROPERTY_NAME, value = "exemplo.steps")
 @ConfigurationParameter(key = PLUGIN_PROPERTY_NAME, value = "pretty")
 public class RunnerTest {
 }
