@@ -33,7 +33,7 @@ projeto-cucumber
         ├── java
         │   └── steps
         │       ├── CalculadoraSteps.java
-        │       └── RunnerTest.java
+        │   └── RunnerTest.java
         └── resources
             └── features
                 └── calculadora.feature
