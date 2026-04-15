@@ -210,7 +210,7 @@ Funcionalidade: Reserva de salas de reunião
 ### Classe `Sala.java`
 
 ```java
-package br.com.exemplo.reservas;
+package reservas;
 
 public class Sala {
     private String nome;
@@ -252,7 +252,7 @@ public class Sala {
 ### Classe `Reserva.java`
 
 ```java
-package br.com.exemplo.reservas;
+package reservas;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -319,7 +319,7 @@ public class Reserva {
 ### Classe `ResultadoReserva.java`
 
 ```java
-package br.com.exemplo.reservas;
+package reservas;
 
 public class ResultadoReserva {
     private boolean sucesso;
@@ -345,7 +345,7 @@ public class ResultadoReserva {
 ### Classe `SistemaReservas.java`
 
 ```java
-package br.com.exemplo.reservas;
+package reservas;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -421,7 +421,7 @@ public class SistemaReservas {
 ### `RunnerTest.java`
 
 ```java
-package br.com.exemplo.reservas.runner;
+package reservas.runner;
 
 import static io.cucumber.junit.platform.engine.Constants.GLUE_PROPERTY_NAME;
 import static io.cucumber.junit.platform.engine.Constants.PLUGIN_PROPERTY_NAME;
@@ -434,7 +434,7 @@ import org.junit.platform.suite.api.Suite;
 @Suite
 @IncludeEngines("cucumber")
 @SelectClasspathResource("features")
-@ConfigurationParameter(key = GLUE_PROPERTY_NAME, value = "br.com.exemplo.reservas.steps")
+@ConfigurationParameter(key = GLUE_PROPERTY_NAME, value = "reservas.steps")
 @ConfigurationParameter(key = PLUGIN_PROPERTY_NAME, value = "pretty")
 public class RunnerTest {
 }
@@ -447,12 +447,12 @@ public class RunnerTest {
 ### Step `ReservaSteps.java`
 
 ```java
-package br.com.exemplo.reservas.steps;
+package reservas.steps;
 
-import br.com.exemplo.reservas.Reserva;
-import br.com.exemplo.reservas.ResultadoReserva;
-import br.com.exemplo.reservas.Sala;
-import br.com.exemplo.reservas.SistemaReservas;
+import reservas.Reserva;
+import reservas.ResultadoReserva;
+import reservas.Sala;
+import reservas.SistemaReservas;
 import io.cucumber.java.pt.Dado;
 import io.cucumber.java.pt.Quando;
 import io.cucumber.java.pt.Então;
