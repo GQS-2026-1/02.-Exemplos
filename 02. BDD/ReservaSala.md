@@ -70,7 +70,8 @@ reserva-salas-bdd/
 
 ## 📝 Exemplos de cenários que devem ser contemplados
 
-```gherkin
+```none
+
 #language: pt
 
 Funcionalidade: Reserva de salas de reunião
@@ -113,13 +114,12 @@ Funcionalidade: Reserva de salas de reunião
     Quando o usuário solicitar uma reserva para a sala "Sala Ouro" no dia "20/12/2026" das "08:00" às "09:00" para 10 participantes
     Então a reserva não deve ser realizada
     E a mensagem exibida deve ser "Sala indisponível"
-    ```
----
+ ```   
+--- 
 
 ## ⚙️ Configuração `pom.xml`
 
-> Neste exemplo, a versão do Java está centralizada na propriedade `java.version`.  
-> Para usar outra versão, basta alterar apenas esta linha.
+ Neste exemplo, a versão do Java está centralizada na propriedade `java.version`. Para usar outra versão, basta alterar apenas esta linha.
 
 ```xml
 <project xmlns="http://maven.apache.org/POM/4.0.0"
@@ -308,8 +308,8 @@ public class Reserva {
             return false;
         }
 
-        return this.horarioInicio.isBefore(outra.getHorarioFim)
-                && this.horarioFim.isAfter(outra.getHorarioInicio);
+        return this.horarioInicio.isBefore(outra.getHorarioFim())
+                && this.horarioFim.isAfter(outra.getHorarioInicio());
     }
 }
 ```
